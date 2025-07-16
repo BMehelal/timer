@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr"
+      crossorigin="anonymous"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #e9ecef; /* Softer, light grey background */
+        display: flex; /* Use flexbox to center content */
+        justify-content: center; /* Center horizontally */
+        align-items: center; /* Center vertically */
+        min-height: 100vh; /* Take full viewport height */
+        margin: 0;
+        padding: 15px; /* Add some padding for small screens */
+        box-sizing: border-box; /* Include padding in element's total width and height */
+        transition: background-color 0.5s ease; /* Smooth transition for background color change */
+      }
+      .timer-container {
+            background-color: #ffffff; /* White background for the timer box */
+            border-radius: 15px; /* Rounded corners */
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Soft shadow */
+            padding: 30px;
+            text-align: center;
+            max-width: 400px; /* Max width for better mobile experience */
+            width: 100%; /* Make it fill available width up to max-width */
+            border: 1px solid #e0e0e0; /* Subtle border */
+        }
+        .timer-display {
+            font-size: 4.5rem; /* Very large font for the countdown timer */
+            font-weight: 700;
+            color: #007bff; /* Primary blue color for the timer */
+            margin-bottom: 25px;
+            letter-spacing: -2px; /* Slight letter spacing adjustment for readability */
+            transition: color 0.3s ease; /* Smooth transition for timer color change */
+        }
+        .progress-text {
+            font-size: 1.1rem;
+            color: #6c757d; /* Muted grey for progress text */
+            margin-bottom: 25px;
+        }
+        .btn-group-custom {
+            display: flex; /* Use flexbox for buttons */
+            flex-wrap: wrap; /* Allow buttons to wrap to the next line on small screens */
+            gap: 10px; /* Space between buttons */
+            justify-content: center; /* Center buttons horizontally */
+        }
+        .btn-custom {
+            flex-grow: 1; /* Allow buttons to grow and fill available space */
+            min-width: 120px; /* Minimum width for buttons */
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 10px; /* Rounded corners for buttons */
+            transition: all 0.3s ease; /* Smooth transition for hover effects */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for buttons */
+        }
+      @media (max-width: 375px) {
+        /* Targeting typical iPhone SE 2020 width */
+        .timer-display {
+          font-size: 3.5rem; /* Slightly smaller timer font */
+        }
+        .display-text {
+          font-size: 1.5rem; /* Slightly smaller exercise text */
+        }
+        .progress-text {
+          font-size: 1rem; /* Slightly smaller progress text */
+        }
+        .btn-custom {
+          padding: 10px 15px; /* Smaller padding for buttons */
+          font-size: 1rem; /* Smaller font for buttons */
+        }
+      }
+    </style>
+  </head>
+  <title>HIIT workout timer</title>
+  <body>
+    <div class="timer-container">
+    <div id="currentExercise" class="display-text">Exercise Name</div>
+    <div id="timerDisplay" class = "timer-display">Timer</div>
+
+    <div id="progressText" class="progress-text"></div>
+    <div class="btn-group-custom mt-4">
+      <button id="playButton" class="btn btn-success btn-custom">Play</button>
+      <button id="pauseButton" class="btn btn-warning btn-custom">Pause</button>
+      <button id="resetButton" class="btn btn-danger btn-custom">Reset</button>
+    </div>
+    <div>
+
+    <script
+      src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+      xintegrity="sha384-I7E8VVD/ismYTF4hNIPjVpZVfkMgtiP/wYjSLx/tL+WgC4oGgEyh/l+1ceYJc/sfG"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"
+      xintegrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+      crossorigin="anonymous"
+    ></script>
+
+    <script>
+      const workoutRoutine = [
+        { name: "High Knees", duration: 20 },
+        { name: "Mountain Climbers", duration: 20 },
+        { name: "Rest", duration: 20 },
+        { name: "Squat Jump", duration: 20 },
+        { name: "In and Out Squats", duration: 20 },
+        { name: "Rest", duration: 20 },
+        { name: "High Knees and Pushing Arms Upwards", duration: 20 },
+        { name: "Cross Leg Mountain Climbers", duration: 20 },
+        { name: "Rest", duration: 20 },
+        { name: "Plank Reaches", duration: 20 },
+        { name: "Plank Pushing Foward", duration: 20 },
+        { name: "Rest", duration: 20 },
+        { name: "Burpees", duration: 40 },
+      ];
+      const totalRounds = 2;
+      const currentExerciseElement = document.getElementById("currentExercise");
+      const timerDisplayElement = document.getElementById("timerDisplay");
+      const progressTextElement = document.getElementById("progressText");
+      const playButton = document.getElementById("playButton");
+      const pauseButton = document.getElementById("pauseButton");
+      const resetButton = document.getElementById("resetButton");
+
+      let currentExerciseIndex = 0;
+      let timeLeft = 0;
+      let intervalId = null;
+      let isPaused = true;
+      let currentRound = 1;
+      const audioContext = new (window.AudioContext ||
+        window.webkitAudioContext)();
+      function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes.toString().padStart(2, "0")}:${remainingSeconds
+          .toString()
+          .padStart(2, "0")}`;
+      }
+
+      function playBeep(frequency = 1320, duration = 0.5, volume = 0.7) {
+        if (!audioContext) return;
+
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        oscillator.frequency.value = frequency;
+        gainNode.gain.volume = volume;
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + duration);
+      }
+
+      function updateDisplay() {
+        const currentExercise = workoutRoutine[currentExerciseIndex];
+        if (currentExercise) {
+          currentExerciseElement.textContent = currentExercise.name;
+          timerDisplayElement.textContent = formatTime(timeLeft);
+          progressTextElement.textContent = `Round ${currentRound} of ${totalRounds} - ${
+            currentExerciseIndex + 1
+          } / ${workoutRoutine.length}`;
+          console.log(
+            "we updated display with",
+            currentExercise.name,
+            currentExercise.duration
+          );
+        } else {
+          currentExerciseElement.textContent = "Workout Complete!";
+          timerDisplayElement.textContent = "00:00";
+          progressTextElement.textContent = "";
+        }
+      }
+
+      function nextSegment() {
+        currentExerciseIndex++;
+        if (currentExerciseIndex < workoutRoutine.length) {
+          timeLeft = workoutRoutine[currentExerciseIndex].duration;
+          updateDisplay();
+        } else {
+          currentRound++;
+          if (currentRound <= totalRounds) {
+            currentExerciseIndex = 0;
+            timeLeft = workoutRoutine[currentExerciseIndex].duration;
+            updateDisplay();
+          } else {
+            stopTimer();
+            currentExerciseElement.textContent = "Workout Complete!";
+            timerDisplayElement.textContent = "00:00";
+            progressTextElement.textContent = "";
+          }
+        }
+      }
+
+      function startTimer() {
+        if (!isPaused && intervalId) return;
+        isPaused = false;
+        playButton.disabled = true;
+        pauseButton.disabled = false;
+        resetButton.disabled = false;
+
+        if (timeLeft === 0 && currentExerciseIndex == 0 && currentRound == 1) {
+          console.log("starting exercise");
+          timeLeft = workoutRoutine[currentExerciseIndex].duration;
+        }
+        playBeep();
+        updateDisplay();
+        intervalId = setInterval(() => {
+          timeLeft--;
+          updateDisplay();
+          if (timeLeft <= 0) {
+            //clearInterval(intervalId); // Play a low beep for segment end
+            playBeep();
+            setTimeout(() => {
+              nextSegment();
+              if (
+                currentRound <= totalRounds &&
+                currentExerciseIndex < workoutRoutine.length
+              ) {
+                startTimer();
+              }
+            }, 300); // Small delay to allow beep to play before next segment starts
+          }
+        }, 1000);
+      }
+
+      function pauseTimer() {
+        clearInterval(intervalId);
+        isPaused = true;
+        playButton.disabled = false;
+        pauseButton.disabled = true;
+      }
+
+      function stopTimer() {
+        clearInterval(intervalId);
+        intervalId = null;
+        isPaused = true;
+      }
+
+      function resetTimer() {
+        stopTimer();
+        currentExerciseIndex = 0;
+        timeLeft = 0;
+        isPaused = true;
+        currentRound = 1;
+        playButton.disabled = false;
+        pauseButton.disabled = true;
+        resetButton.disabled = false;
+        currentExerciseElement.textContent = "Ready to Start!";
+        timerDisplayElement.textContent = "00:00";
+        progressTextElement.textContent = "";
+      }
+
+      function disableButtonsOnCompletion() {
+        playButton.disabled = true;
+        pauseButton.disabled = true;
+        resetButton.disabled = false;
+      }
+
+      playButton.addEventListener("click", startTimer);
+      pauseButton.addEventListener("click", pauseTimer);
+      resetButton.addEventListener("click", resetTimer);
+      document.addEventListener("DOMContentLoaded", () => {
+        resetTimer();
+      });
+    </script>
+  </body>
+</html>
