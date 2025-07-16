@@ -53,16 +53,17 @@
         }
         .btn-custom {
             flex-grow: 1; /* Allow buttons to grow and fill available space */
-            min-width: 120px; /* Minimum width for buttons */
-            padding: 12px 20px;
+            min-width: 122px; /* Minimum width for buttons */
+            padding: 12px 22px;
             font-size: 1.1rem;
             font-weight: 600;
             border-radius: 10px; /* Rounded corners for buttons */
             transition: all 0.3s ease; /* Smooth transition for hover effects */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for buttons */
+            margin-top: 40px;
         }
       @media (max-width: 375px) {
-        /* Targeting typical iPhone SE 2020 width */
+        /* Targeting typical iPhone SE 22 width */
         .timer-display {
           font-size: 3.5rem; /* Slightly smaller timer font */
         }
@@ -106,19 +107,20 @@
 
     <script>
       const workoutRoutine = [
-        { name: "High Knees", duration: 20 },
-        { name: "Mountain Climbers", duration: 20 },
-        { name: "Rest", duration: 20 },
-        { name: "Squat Jump", duration: 20 },
-        { name: "In and Out Squats", duration: 20 },
-        { name: "Rest", duration: 20 },
-        { name: "High Knees and Pushing Arms Upwards", duration: 20 },
-        { name: "Cross Leg Mountain Climbers", duration: 20 },
-        { name: "Rest", duration: 20 },
-        { name: "Plank Reaches", duration: 20 },
-        { name: "Plank Pushing Foward", duration: 20 },
-        { name: "Rest", duration: 20 },
-        { name: "Burpees", duration: 40 },
+        { name: "High Knees", duration: 22 },
+        { name: "Mountain Climbers", duration: 22 },
+        { name: "Rest", duration: 22 },
+        { name: "Squat Jump", duration: 22 },
+        { name: "In and Out Squats", duration: 22 },
+        { name: "Rest", duration: 22 },
+        { name: "High Knees and Pushing Arms Upwards", duration: 22 },
+        { name: "Cross Leg Mountain Climbers", duration: 22 },
+        { name: "Rest", duration: 22 },
+        { name: "Plank Reaches", duration: 22 },
+        { name: "Plank Pushing Foward", duration: 22 },
+        { name: "Rest", duration: 22 },
+        { name: "Burpees", duration: 42 },
+        { name: "Rest", duration: 22 },
       ];
       const totalRounds = 2;
       const currentExerciseElement = document.getElementById("currentExercise");
@@ -143,7 +145,7 @@
           .padStart(2, "0")}`;
       }
 
-      function playBeep(frequency = 1320, duration = 0.5, volume = 0.7) {
+      function playBeep(frequency = 1322, duration = 0.5, volume = 0.7) {
         if (!audioContext) return;
 
         const oscillator = audioContext.createOscillator();
