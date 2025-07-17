@@ -145,7 +145,7 @@
           .padStart(2, "0")}`;
       }
 
-      function playBeep(frequency = 1322, duration = 0.5, volume = 0.7) {
+      function playBeep(frequency = 1322, duration = 0.5, volume = 0.4) {
         if (!audioContext) return;
 
         const oscillator = audioContext.createOscillator();
